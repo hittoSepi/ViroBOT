@@ -14,7 +14,7 @@ function isFunction(functionToCheck) {
 
 function trans(input, callback) {
     translate(input, {from:"fi", to:'et'}).then(res => {
-        callback(res.text)
+        callback(res.text);
     }).catch(err => {
         console.error(err);
     });
@@ -38,7 +38,7 @@ function checkIfCommand(input) {
         const regex = /^!([a-zA-Z]*)\s?(.*)?/g;
         var regres = regex.exec(input);
        
-        if(regres != null) {
+        if(regres !== null) {
             // check if command and inputs are present and apply new values
             if(regres[1]) {
                 currentCommand = regres[1];
@@ -56,7 +56,7 @@ function checkIfCommand(input) {
             }
             
             // check if command and text are good
-            if(currentCommand != undefined) {
+            if(currentCommand !== undefined) {
                 return true;
             }
         }
@@ -72,15 +72,18 @@ client.on('message', msg => {
 
     if(checkIfCommand(msg.content)) {
         switch(currentCommand) {
+
+            // Viro translation command
             case 'viro': 
                 trans(currentText, function(result){
-                    msg.reply(result);
+                    msg.channel.send(result);
                 });
             break;
-            case 'viroRNG':
 
+            // sets change to speak value or views current
+            case 'viroRNG': 
                 var message = ""
-                if(currentText != undefined) {
+                if(currentText !== undefined) {
                     changeToSpeak = currentText;
                     message = "Viron käännöksiä tulee nyt " + changeToSpeak + "% mahdollisuudella";
                 }
@@ -90,10 +93,11 @@ client.on('message', msg => {
                 }
 
                 trans(message, function(result){
-                    msg.reply(result);   
+                    msg.channel.send(result);
                 });
                 
             break;
+
             default:
             break;
         }
@@ -102,12 +106,19 @@ client.on('message', msg => {
         currentText = undefined;
     }
     
-    else if(msg.author.bot == false) {
+    else if(msg.author.bot === false) {
+        console.log("not bot and command");
         if(allowSpeak()) {
+            console.log("speak allowed");
             trans(msg.content, function(result){
-                msg.reply(result);
+                console.log(result);
+                msg.channel.send(result);
             });
         } 
+        else {
+            console.log("no speak");
+        }
+
     }
 });
   
