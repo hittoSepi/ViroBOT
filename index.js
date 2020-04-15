@@ -4,7 +4,7 @@ var translate   = require('translation-google');
 var Translator  = require('./modules/translator.js');
 
 // variables
-var discordBotToken = 'Njk5OTMyNDkzODkzMjA2MDM2.XpbljA.6tmiNb3F_RhmGTpw9zDFq5bCBY4'; // 'YOUR_DISCORD_BOT_TOKEN'; // your bot token from your discordapps bot page
+var discordBotToken =  'YOUR_DISCORD_BOT_TOKEN_HERE'; // your bot token from your discordapps bot page
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
