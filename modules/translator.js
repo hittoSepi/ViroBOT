@@ -55,7 +55,6 @@ var Translator = {
     * @param string input - Raw msg content
     */
     checkIfCommand: function(input) {
-        console.log(input);
         if(input.startsWith("!")) {
             const regex = /^!([a-zA-Z]*)\s?(.*)?/g;
             var regres = regex.exec(input);
@@ -85,5 +84,5 @@ var Translator = {
         return false;
     }
 }
-console.log(Translator);
+
 module.exports = Translator;
