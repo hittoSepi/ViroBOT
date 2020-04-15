@@ -58,8 +58,6 @@ function checkIfCommand(input) {
             // check if command and text are good
             if(currentCommand != undefined) {
                 return true;
-            }else {
-                
             }
         }
     }
