@@ -3,7 +3,7 @@ const client = new Discord.Client();
 var translate = require('translation-google');
 
 
-var discordBotToken = 'YOUR_DISCORD_BOT_TOKEN';
+var discordBotToken =  'YOUR_DISCORD_BOT_TOKEN';
 
 var currentCommand  = undefined;
 var currentText     = undefined;
@@ -113,4 +113,4 @@ client.on('message', msg => {
     }
 });
   
-client.login(token);
+client.login(discordBotToken);
