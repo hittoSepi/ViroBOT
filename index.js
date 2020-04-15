@@ -3,16 +3,37 @@ const client = new Discord.Client();
 var translate = require('translation-google');
 
 
-var discordBotToken =  'YOUR_DISCORD_BOT_TOKEN';
+// variables
+var discordBotToken =  'YOUR_DISCORD_BOT_TOKEN'; // your bot token from your discordapps bot page
 
 var currentCommand  = undefined;
-var currentText     = undefined;
+var currentArgs     = undefined;
+
+// change to speak stuff
+var randomMax       = 100;
+var changeToSpeak   = 5;
+
 
 function isFunction(functionToCheck) {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
 }
 
-function trans(input, callback) {
+/**
+ * Translator function
+ * translates from Finland to Estonia
+ * @constructor
+ * @param {string} input - Finnish text to translate
+ * @param {function} callback - The callback that handles the translated response.
+ * 
+ * @example
+ *  Usage: translateFinToEstonia(messageFromChat, GetResultsCB)
+ *  Callback: GetResultsCB(result)
+ *  Example usage:
+ *   translateFinToEstonia(currentArgs, function(result){ 
+ *       msg.channel.send(result);
+ *   });
+ */
+function translateFinToEstonia(input, callback) {
     translate(input, {from:"fi", to:'et'}).then(res => {
         callback(res.text);
     }).catch(err => {
@@ -20,10 +41,10 @@ function trans(input, callback) {
     });
 }
 
-var randomMax = 100;
-var changeToSpeak = 5;
-
-// roll some dice and check if
+/** 
+* roll some dice and check if random is greater than change to speak, then allow spam.
+* @constructor
+*/
 function allowSpeak() {
     var random = Math.round(Math.random() * randomMax).toFixed(0);
     if(random  >= (randomMax - changeToSpeak)) {
@@ -32,7 +53,11 @@ function allowSpeak() {
     return false;
 }
 
-// check if message is command
+/** 
+* checks if message is command
+* @constructor
+* @param string input - Raw msg content
+*/
 function checkIfCommand(input) {
     if(input.startsWith("!")) {
         const regex = /^!([a-zA-Z]*)\s?(.*)?/g;
@@ -48,10 +73,10 @@ function checkIfCommand(input) {
                 return false;
             }
             if(regres[2]) {
-                currentText = regres[2];
+                currentArgs = regres[2];
             }
             else {
-                currentText = undefined;
+                currentArgs = undefined;
                 //return false;
             }
             
@@ -75,26 +100,44 @@ client.on('message', msg => {
 
             // Viro translation command
             case 'viro': 
-                trans(currentText, function(result){
+                translateFinToEstonia(currentArgs, function(result){
                     msg.channel.send(result);
                 });
             break;
 
             // sets change to speak value or views current
             case 'viroRNG': 
+
                 var message = ""
-                if(currentText !== undefined) {
-                    changeToSpeak = currentText;
-                    message = "Viron käännöksiä tulee nyt " + changeToSpeak + "% mahdollisuudella";
+                var translateMessage = true;
+
+                if (currentArgs !== undefined) {
+                    currentArgs = parseInt(currentArgs.trim());
+                    
+                    if(Number.isInteger(currentArgs)) { // check if parameter is number
+                        currentArgs = Math.min(currentArgs, 100); // limit value to 100
+                        currentArgs = Math.max(currentArgs, 0); // limit value to 0
+                        changeToSpeak = currentArgs;
+                        message = "Viron käännöksiä tulee nyt " + changeToSpeak + "% mahdollisuudella";
+                    }
+                    else {
+                        translateMessage = false;
+                        message = "Huom! Käyttö !viroRNG <0-100>";  
+                    }
                 }
                 else { 
-                  
                     message = "Viron käännöksiä nyt " + changeToSpeak + "% mahdollisuudella";
                 }
+                if (translateMessage === true) { // translate message if needed
 
-                trans(message, function(result){
-                    msg.channel.send(result);
-                });
+                    translateFinToEstonia(message, function(result){
+                        msg.channel.send(result);
+                    });
+
+                }
+                else {
+                    msg.channel.send(message); // send message to channel
+                }
                 
             break;
 
@@ -102,23 +145,17 @@ client.on('message', msg => {
             break;
         }
        
-        currentCommand = undefined;
-        currentText = undefined;
+        // reset current command and arguments
+        currentCommand  = undefined;
+        currentArgs     = undefined;
     }
     
-    else if(msg.author.bot === false) {
-        console.log("not bot and command");
+    else if(msg.author.bot === false) { // continue if message is not from bot user
         if(allowSpeak()) {
-            console.log("speak allowed");
-            trans(msg.content, function(result){
-                console.log(result);
+            translateFinToEstonia(msg.content, function(result){
                 msg.channel.send(result);
             });
         } 
-        else {
-            console.log("no speak");
-        }
-
     }
 });
   
