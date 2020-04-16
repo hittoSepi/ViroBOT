@@ -1,6 +1,6 @@
 const Discord       = require('discord.js');
 const Translator    = require('./modules/translator.js');
-let CommandManager  = require('./modules/CommandManager.js');
+const CommandManager  = require('./modules/CommandManager.js');
 
 require ('custom-env').env('staging');
 
